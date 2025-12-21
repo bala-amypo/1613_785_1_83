@@ -1,23 +1,62 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "vendor_performance_score")
 public class VendorPerformanceScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Vendor vendor;
+    // vendor id (foreign key or reference)
+    @Column(nullable = false)
+    private Long vendor;
 
-    private Double onTimePercentage;
-    private Double qualityCompliancePercentage;
-    private Double overallScore;
+    @Column(nullable = false)
+    private Double score;
 
-    public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public void setOnTimePercentage(Double v) { this.onTimePercentage = v; }
-    public void setQualityCompliancePercentage(Double v) { this.qualityCompliancePercentage = v; }
-    public void setOverallScore(Double v) { this.overallScore = v; }
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    // constructors
+    public VendorPerformanceScore() {
+    }
+
+    public VendorPerformanceScore(Long vendor, Double score) {
+        this.vendor = vendor;
+        this.score = score;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public Long getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Long vendor) {
+        this.vendor = vendor;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
