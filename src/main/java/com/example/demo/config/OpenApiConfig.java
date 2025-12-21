@@ -10,7 +10,7 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public Swagger customOpenAPI() {
         return new OpenAPI()
                 // You need to change the port as per your server
                 .servers(List.of(
