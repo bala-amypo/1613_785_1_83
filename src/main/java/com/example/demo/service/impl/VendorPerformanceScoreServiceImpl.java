@@ -1,3 +1,11 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
+
+import org.springframework.stereotype.Service;
+import java.util.List;
+
 @Service
 public class VendorPerformanceScoreServiceImpl {
 
@@ -24,6 +32,7 @@ public class VendorPerformanceScoreServiceImpl {
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
 
         List<DeliveryEvaluation> list = evalRepo.findByVendorId(vendorId);
+
         long total = list.size();
         long onTime = list.stream().filter(DeliveryEvaluation::getMeetsDeliveryTarget).count();
         long quality = list.stream().filter(DeliveryEvaluation::getMeetsQualityTarget).count();
