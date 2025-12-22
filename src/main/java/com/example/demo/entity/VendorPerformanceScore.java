@@ -11,7 +11,6 @@ public class VendorPerformanceScore {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // vendor id (foreign key or reference)
     @Column(nullable = false)
     private Long vendor;
 
@@ -21,9 +20,7 @@ public class VendorPerformanceScore {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    // constructors
-    public VendorPerformanceScore() {
-    }
+    public VendorPerformanceScore() {}
 
     public VendorPerformanceScore(Long vendor, Double score) {
         this.vendor = vendor;
@@ -31,32 +28,12 @@ public class VendorPerformanceScore {
         this.createdAt = LocalDateTime.now();
     }
 
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public Long getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(Long vendor) {
-        this.vendor = vendor;
-    }
-
-    public Double getScore() {
-        return score;
-    }
-
-    public void setScore(Double score) {
-        this.score = score;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public Long getVendor() { return vendor; }
+    public void setVendor(Long vendor) { this.vendor = vendor; }
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
