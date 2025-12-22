@@ -4,9 +4,7 @@ import com.example.demo.entity.VendorTier;
 import java.util.List;
 
 public interface VendorTierService {
-    VendorTier createTier(VendorTier tier);
-    VendorTier updateTier(Long id, VendorTier tier);
-    VendorTier getTierById(Long id);
-    List<VendorTier> getAllTiers();
-    void deactivateTier(Long id);
+    List<VendorTier> getAllVendorTiers();
+    VendorTier getVendorTierById(Long id);
+    VendorTier createVendorTier(VendorTier vendorTier);
 }
