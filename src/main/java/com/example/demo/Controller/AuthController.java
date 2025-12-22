@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
-import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
+import com.example.demo.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -15,46 +16,39 @@ public class AuthController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // Constructor Injection
+    // Constructor injection
     public AuthController(UserService userService, JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    // Register new user
+    // Register endpoint
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String password = request.get("password");
-        String role = request.get("role");
+    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
+        String role = body.get("role");
 
-        try {
-            User user = userService.register(email, password, role);
-            return ResponseEntity.ok(Map.of(
-                    "message", "User registered successfully",
-                    "userId", user.getId()
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        User user = userService.register(email, password, role);
+        return ResponseEntity.ok(user);
     }
 
-    // Login user and return JWT
+    // Login endpoint
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String password = request.get("password");
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
 
-        try {
-            User user = userService.login(email, password);
-            String token = jwtTokenProvider.createToken(email, user.getRole());
-            return ResponseEntity.ok(Map.of(
-                    "email", email,
-                    "role", user.getRole(),
-                    "token", token
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        User user = userService.login(email, password);
+
+        // Generate JWT token
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("email", user.getEmail());
+        response.put("role", user.getRole());
+
+        return ResponseEntity.ok(response);
     }
 }
