@@ -64,7 +64,11 @@ public class VendorPerformanceScoreServiceImpl
     }
 
     @Override
-    public List<VendorPerformanceScore> getScoresForVendor(Long vendorId) {
-        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId);
-    }
+   Vendor vendor = vendorRepo.findById(vendorId)
+        .orElseThrow(() -> new IllegalArgumentException("not found"));
+
+return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendor)
+        .stream().findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("not found"));
+
 }
