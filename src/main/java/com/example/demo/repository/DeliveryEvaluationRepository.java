@@ -1,20 +1,20 @@
 package com.example.demo.repository;
 
+
 import com.example.demo.entity.*;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import java.util.List;
 
-public interface DeliveryEvaluationRepository
-        extends JpaRepository<DeliveryEvaluation, Long> {
 
-    List<DeliveryEvaluation> findByVendorId(Long vendorId);
+public interface DeliveryEvaluationRepository extends JpaRepository<DeliveryEvaluation, Long> {
+List<DeliveryEvaluation> findByVendorId(Long vendorId);
+List<DeliveryEvaluation> findBySlaRequirementId(Long slaId);
 
-    List<DeliveryEvaluation> findBySlaRequirementId(Long slaId);
 
-    @Query("SELECT d FROM DeliveryEvaluation d WHERE d.vendor = ?1 AND d.qualityScore >= ?2")
-    List<DeliveryEvaluation> findHighQualityDeliveries(Vendor vendor, Double minScore);
+@Query("select d from DeliveryEvaluation d where d.vendor = :vendor and d.qualityScore >= :minScore")
+List<DeliveryEvaluation> findHighQualityDeliveries(Vendor vendor, Double minScore);
 
-    @Query("SELECT d FROM DeliveryEvaluation d WHERE d.slaRequirement = ?1 AND d.meetsDeliveryTarget = true")
-    List<DeliveryEvaluation> findOnTimeDeliveries(SLARequirement sla);
+
+@Query("select d from DeliveryEvaluation d where d.slaRequirement = :sla and d.meetsDeliveryTarget = true")
+List<DeliveryEvaluation> findOnTimeDeliveries(SLARequirement sla);
 }
