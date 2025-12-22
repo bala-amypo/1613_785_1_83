@@ -1,22 +1,24 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 public class Vendor {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     @Column(unique = true)
     private String name;
 
+    private String contactEmail;
+    private String contactPhone;
     private Boolean active = true;
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public Boolean getActive() { return active; }
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public void setName(String name) { this.name = name; }
-    public void setActive(Boolean active) { this.active = active; }
+    // getters & setters
 }
