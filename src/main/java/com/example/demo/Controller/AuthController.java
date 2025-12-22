@@ -11,7 +11,6 @@ public class AuthController {
 
     private final UserService userService;
 
-    // Constructor injection
     public AuthController(UserService userService) {
         this.userService = userService;
     }
@@ -20,8 +19,12 @@ public class AuthController {
     public ResponseEntity<User> register(@RequestParam String email,
                                          @RequestParam String password,
                                          @RequestParam String role) {
-        User user = userService.register(email, password, role);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.register(email, password, role));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestParam String email,
+                                      @RequestParam String password) {
+        return ResponseEntity.ok(userService.login(email, password));
+    }
 }
