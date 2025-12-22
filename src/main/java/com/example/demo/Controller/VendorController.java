@@ -31,3 +31,16 @@ public class VendorController {
     public ResponseEntity<Vendor> getVendor(@PathVariable Long id) {
         return ResponseEntity.ok(vendorService.getVendorById(id));
     }
+
+    @GetMapping("/")
+    public ResponseEntity<List<Vendor>> getAllVendors() {
+        return ResponseEntity.ok(vendorService.getAllVendors());
+    }
+
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateVendor(@PathVariable Long id) {
+        vendorService.deactivateVendor(id);
+        return ResponseEntity.ok("Vendor deactivated");
+    }
+
+}
