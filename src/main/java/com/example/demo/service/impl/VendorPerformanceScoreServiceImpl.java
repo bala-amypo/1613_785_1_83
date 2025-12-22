@@ -9,8 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Service
-public class VendorPerformanceScoreServiceImpl
-        implements VendorPerformanceScoreService {
+public class VendorPerformanceScoreServiceImpl implements VendorPerformanceScoreService {
 
     private final VendorPerformanceScoreRepository scoreRepo;
     private final DeliveryEvaluationRepository evalRepo;
@@ -31,17 +30,18 @@ public class VendorPerformanceScoreServiceImpl
 
     @Override
     public VendorPerformanceScore calculateScore(Long vendorId) {
-
         Vendor vendor = vendorRepo.findById(vendorId)
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
 
         List<DeliveryEvaluation> evals = evalRepo.findByVendorId(vendorId);
 
         long total = evals.size();
         long onTime = evals.stream()
-                .filter(DeliveryEvaluation::getMeetsDeliveryTarget).count();
+                .filter(DeliveryEvaluation::getMeetsDeliveryTarget)
+                .count();
         long quality = evals.stream()
-                .filter(DeliveryEvaluation::getMeetsQualityTarget).count();
+                .filter(DeliveryEvaluation::getMeetsQualityTarget)
+                .count();
 
         double onTimePct = total == 0 ? 0 : (onTime * 100.0 / total);
         double qualityPct = total == 0 ? 0 : (quality * 100.0 / total);
@@ -58,17 +58,19 @@ public class VendorPerformanceScoreServiceImpl
 
     @Override
     public VendorPerformanceScore getLatestScore(Long vendorId) {
-        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId)
+        Vendor vendor = vendorRepo.findById(vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+
+        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendor)
                 .stream().findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
+                .orElseThrow(() -> new IllegalArgumentException("No scores found"));
     }
 
     @Override
-   Vendor vendor = vendorRepo.findById(vendorId)
-        .orElseThrow(() -> new IllegalArgumentException("not found"));
+    public List<VendorPerformanceScore> getScoresForVendor(Long vendorId) {
+        Vendor vendor = vendorRepo.findById(vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
 
-return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendor)
-        .stream().findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("not found"));
-
+        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendor);
+    }
 }
