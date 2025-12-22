@@ -1,27 +1,19 @@
-package com.example.demo.service.impl;
+public class VendorServiceImpl implements VendorService {
 
-import com.example.demo.entity.Vendor;
-import com.example.demo.repository.VendorRepository;
+    private final VendorRepository vendorRepository;
 
-import org.springframework.stereotype.Service;
-
-@Service
-public class VendorServiceImpl {
-
-    private final VendorRepository repo;
-
-    public VendorServiceImpl(VendorRepository repo) {
-        this.repo = repo;
+    public VendorServiceImpl(VendorRepository vendorRepository) {
+        this.vendorRepository = vendorRepository;
     }
 
     public Vendor createVendor(Vendor v) {
-        if (repo.existsByName(v.getName()))
+        if (vendorRepository.existsByName(v.getName()))
             throw new IllegalArgumentException("unique");
-        return repo.save(v);
+        return vendorRepository.save(v);
     }
 
     public Vendor getVendorById(Long id) {
-        return repo.findById(id)
+        return vendorRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
     }
 }

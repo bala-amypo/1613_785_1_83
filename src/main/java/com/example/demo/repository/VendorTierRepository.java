@@ -1,13 +1,5 @@
-package com.example.demo.repository;
-
-import com.example.demo.entity.VendorTier;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-
 public interface VendorTierRepository extends JpaRepository<VendorTier, Long> {
 
-    boolean existsByTierName(String name);
-
     List<VendorTier> findByActiveTrueOrderByMinScoreThresholdDesc();
+    boolean existsByTierName(String name);
 }
