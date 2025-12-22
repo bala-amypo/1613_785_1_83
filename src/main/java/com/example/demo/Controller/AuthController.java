@@ -24,10 +24,4 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestParam String email,
-                                      @RequestParam String password) {
-        User user = userService.login(email, password);
-        return ResponseEntity.ok(user);
-    }
 }
