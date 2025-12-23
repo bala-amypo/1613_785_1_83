@@ -28,14 +28,14 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
-    @Override
-    public User login(String email, String password) {
-        User user = repo.findByEmail(email);
-        if (user == null || !user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("not found");
-        }
-        return user;
-    }
+    // @Override
+    // public User login(String email, String password) {
+    //     User user = repo.findByEmail(email);
+    //     if (user == null || !user.getPassword().equals(password)) {
+    //         throw new IllegalArgumentException("not found");
+    //     }
+    //     return user;
+    // }
 
     @Override
     public User getByEmail(String email) {

@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service   // ✅ REQUIRED — without this Spring will fail
+@Service   //  REQUIRED — without this Spring will fail
 public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService {
 
     private final DeliveryEvaluationRepository evalRepo;
     private final VendorRepository vendorRepo;
     private final SLARequirementRepository slaRepo;
 
-    // ✅ Constructor injection (ORDER MATTERS FOR TESTS)
+    // Constructor injection (ORDER MATTERS FOR TESTS)
     public DeliveryEvaluationServiceImpl(
             DeliveryEvaluationRepository evalRepo,
             VendorRepository vendorRepo,
