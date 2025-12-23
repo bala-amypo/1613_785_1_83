@@ -14,19 +14,34 @@ public class UserServiceImpl implements UserService {
         this.repo = repo;
     }
 
+    @Override
     public User register(String email, String password, String role) {
+
+        if (repo.existsByEmail(email)) {
+            throw new IllegalArgumentException("unique");
+        }
+
         User u = new User();
         u.setEmail(email);
         u.setPassword(password);
         u.setRole(role);
+
         return repo.save(u);
     }
 
+    @Override
     public User login(String email, String password) {
-        return repo.findByEmail(email)
+        User u = repo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
+
+        if (!u.getPassword().equals(password)) {
+            throw new IllegalArgumentException("not found");
+        }
+
+        return u;
     }
 
+    @Override
     public User getByEmail(String email) {
         return repo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
