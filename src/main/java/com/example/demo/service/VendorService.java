@@ -1,13 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.VendorTier;
+import com.example.demo.entity.Vendor;
 import java.util.List;
 
-public interface VendorTierService {
+public interface VendorService {
 
-    VendorTier createTier(VendorTier tier);
+    Vendor createVendor(Vendor vendor);
 
-    List<VendorTier> getAll();
+    Vendor updateVendor(Long id, Vendor vendor);
 
-    VendorTier getById(Long id);
+    Vendor getVendorById(Long id);
+
+    List<Vendor> getAllVendors();
+
+    void deactivateVendor(Long id);
 }
