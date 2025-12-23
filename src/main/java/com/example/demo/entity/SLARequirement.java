@@ -17,7 +17,6 @@ public class SLARequirement {
     private Integer minQualityScore;
     private Boolean active = true;
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }

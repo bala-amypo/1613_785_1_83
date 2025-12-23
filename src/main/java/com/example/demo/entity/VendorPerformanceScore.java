@@ -16,7 +16,6 @@ public class VendorPerformanceScore {
     private Double score;
     private Timestamp calculatedAt;
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }

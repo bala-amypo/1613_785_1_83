@@ -16,7 +16,6 @@ public class VendorTier {
     private String description;
     private Boolean active = true;
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }

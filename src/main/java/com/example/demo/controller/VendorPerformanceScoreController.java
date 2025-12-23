@@ -16,7 +16,6 @@ public class VendorPerformanceScoreController {
         this.scoreService = scoreService;
     }
 
-    // CREATE / CALCULATE SCORE
     @PostMapping("/{vendorId}")
     public VendorPerformanceScore calculateScore(
             @PathVariable Long vendorId,
@@ -25,13 +24,11 @@ public class VendorPerformanceScoreController {
         return scoreService.calculateScore(vendorId, score);
     }
 
-    // GET LATEST SCORE
     @GetMapping("/{vendorId}/latest")
     public VendorPerformanceScore getLatestScore(@PathVariable Long vendorId) {
         return scoreService.getLatestScore(vendorId);
     }
 
-    // GET ALL SCORES
     @GetMapping("/{vendorId}")
     public List<VendorPerformanceScore> getScores(@PathVariable Long vendorId) {
         return scoreService.getScoresForVendor(vendorId);
