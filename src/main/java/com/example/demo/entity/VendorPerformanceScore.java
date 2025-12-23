@@ -17,7 +17,6 @@ public class VendorPerformanceScore {
 
     private Timestamp calculatedAt;
 
-    // ✅ REQUIRED setters
     public void setVendor(Vendor vendor) {
         this.vendor = vendor;
     }
@@ -29,6 +28,4 @@ public class VendorPerformanceScore {
     public void setCalculatedAt(Timestamp calculatedAt) {
         this.calculatedAt = calculatedAt;
     }
-
-    // getters optional but recommended
 }
