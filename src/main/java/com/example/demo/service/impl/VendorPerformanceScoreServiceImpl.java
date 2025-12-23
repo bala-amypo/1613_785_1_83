@@ -1,18 +1,13 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.VendorPerformanceScore;
-import com.example.demo.repository.DeliveryEvaluationRepository;
-import com.example.demo.repository.VendorPerformanceScoreRepository;
-import com.example.demo.repository.VendorRepository;
-import com.example.demo.repository.VendorTierRepository;
-import com.example.demo.service.VendorPerformanceScoreService;
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class VendorPerformanceScoreServiceImpl
-        implements VendorPerformanceScoreService {
+public class VendorPerformanceScoreServiceImpl {
 
     private final VendorPerformanceScoreRepository scoreRepo;
     private final DeliveryEvaluationRepository evalRepo;
@@ -31,46 +26,26 @@ public class VendorPerformanceScoreServiceImpl
         this.tierRepo = tierRepo;
     }
 
-    @Override
     public VendorPerformanceScore calculateScore(Long vendorId) {
-        var vendor = vendorRepo.findById(vendorId)
+
+        Vendor vendor = vendorRepo.findById(vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
 
-        var evaluations = evalRepo.findByVendorId(vendorId);
+        List<DeliveryEvaluation> list = evalRepo.findByVendorId(vendorId);
 
-        long onTime = evaluations.stream()
-                .filter(e -> Boolean.TRUE.equals(e.getMeetsDeliveryTarget()))
-                .count();
+        long total = list.size();
+        long onTime = list.stream().filter(DeliveryEvaluation::getMeetsDeliveryTarget).count();
+        long quality = list.stream().filter(DeliveryEvaluation::getMeetsQualityTarget).count();
 
-        long quality = evaluations.stream()
-                .filter(e -> Boolean.TRUE.equals(e.getMeetsQualityTarget()))
-                .count();
+        double onTimePct = total == 0 ? 0 : onTime * 100.0 / total;
+        double qualityPct = total == 0 ? 0 : quality * 100.0 / total;
 
-        double onTimePct = evaluations.isEmpty() ? 0 : onTime * 100.0 / evaluations.size();
-        double qualityPct = evaluations.isEmpty() ? 0 : quality * 100.0 / evaluations.size();
+        VendorPerformanceScore s = new VendorPerformanceScore();
+        s.setVendor(vendor);
+        s.setOnTimePercentage(onTimePct);
+        s.setQualityCompliancePercentage(qualityPct);
+        s.setOverallScore((onTimePct + qualityPct) / 2);
 
-        VendorPerformanceScore score = new VendorPerformanceScore();
-        score.setVendor(vendor);
-        score.setOnTimePercentage(onTimePct);
-        score.setQualityCompliancePercentage(qualityPct);
-        score.setOverallScore((onTimePct + qualityPct) / 2);
-
-        return scoreRepo.save(score);
-    }
-
-    @Override
-    public VendorPerformanceScore getLatestScore(Long vendorId) {
-        List<VendorPerformanceScore> list =
-                scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId);
-
-        if (list.isEmpty()) {
-            throw new IllegalArgumentException("not found");
-        }
-        return list.get(0);
-    }
-
-    @Override
-    public List<VendorPerformanceScore> getScoresForVendor(Long vendorId) {
-        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId);
+        return scoreRepo.save(s);
     }
 }

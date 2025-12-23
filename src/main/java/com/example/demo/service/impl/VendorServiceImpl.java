@@ -1,5 +1,12 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.Vendor;
+import com.example.demo.repository.VendorRepository;
+
+import org.springframework.stereotype.Service;
+
 @Service
-public class VendorServiceImpl implements VendorService {
+public class VendorServiceImpl {
 
     private final VendorRepository repo;
 
@@ -7,14 +14,14 @@ public class VendorServiceImpl implements VendorService {
         this.repo = repo;
     }
 
-    public Vendor createVendor(Vendor vendor) {
-        if (repo.existsByName(vendor.getName()))
-            throw new IllegalArgumentException("Vendor name must be unique");
-        return repo.save(vendor);
+    public Vendor createVendor(Vendor v) {
+        if (repo.existsByName(v.getName()))
+            throw new IllegalArgumentException("unique");
+        return repo.save(v);
     }
 
     public Vendor getVendorById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+                .orElseThrow(() -> new IllegalArgumentException("not found"));
     }
 }

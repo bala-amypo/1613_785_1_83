@@ -1,5 +1,15 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.DeliveryEvaluation;
+import com.example.demo.entity.SLARequirement;
+import com.example.demo.repository.DeliveryEvaluationRepository;
+import com.example.demo.repository.VendorRepository;
+import com.example.demo.repository.SLARequirementRepository;
+
+import org.springframework.stereotype.Service;
+
 @Service
-public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService {
+public class DeliveryEvaluationServiceImpl {
 
     private final DeliveryEvaluationRepository evalRepo;
     private final VendorRepository vendorRepo;
@@ -9,7 +19,6 @@ public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService 
             DeliveryEvaluationRepository evalRepo,
             VendorRepository vendorRepo,
             SLARequirementRepository slaRepo) {
-
         this.evalRepo = evalRepo;
         this.vendorRepo = vendorRepo;
         this.slaRepo = slaRepo;
@@ -18,13 +27,13 @@ public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService 
     public DeliveryEvaluation createEvaluation(DeliveryEvaluation e) {
 
         if (!e.getVendor().getActive())
-            throw new IllegalStateException("Only active vendors allowed");
+            throw new IllegalStateException("active vendors");
 
         if (e.getActualDeliveryDays() < 0)
             throw new IllegalArgumentException(">= 0");
 
         if (e.getQualityScore() < 0 || e.getQualityScore() > 100)
-            throw new IllegalArgumentException("Quality score between 0 and 100");
+            throw new IllegalArgumentException("Quality score");
 
         SLARequirement sla = e.getSlaRequirement();
 
