@@ -10,41 +10,41 @@ import java.util.List;
 @Service
 public class VendorTierServiceImpl implements VendorTierService {
 
-    private final VendorTierRepository repo;
+    private final VendorTierRepository tierRepo;
 
-    public VendorTierServiceImpl(VendorTierRepository repo) {
-        this.repo = repo;
+    public VendorTierServiceImpl(VendorTierRepository tierRepo) {
+        this.tierRepo = tierRepo;
     }
 
     @Override
     public VendorTier createTier(VendorTier tier) {
-        return repo.save(tier);
+        return tierRepo.save(tier);
     }
 
     @Override
     public VendorTier updateTier(Long id, VendorTier tier) {
-        VendorTier t = getTierById(id);
-        t.setTierName(tier.getTierName());
-        t.setMinScoreThreshold(tier.getMinScoreThreshold());
-        t.setDescription(tier.getDescription());
-        return repo.save(t);
+        VendorTier existing = getTierById(id);
+        existing.setTierName(tier.getTierName());
+        existing.setMinScoreThreshold(tier.getMinScoreThreshold());
+        existing.setDescription(tier.getDescription());
+        return tierRepo.save(existing);
     }
 
     @Override
     public VendorTier getTierById(Long id) {
-        return repo.findById(id)
+        return tierRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tier not found"));
     }
 
     @Override
     public List<VendorTier> getAllTiers() {
-        return repo.findAll();
+        return tierRepo.findAll();
     }
 
     @Override
-    public void deactivateTier(Long id) {
-        VendorTier t = getTierById(id);
-        t.setActive(false);
-        repo.save(t);
+    public VendorTier deactivateTier(Long id) {
+        VendorTier tier = getTierById(id);
+        tier.setActive(false);
+        return tierRepo.save(tier);
     }
 }
