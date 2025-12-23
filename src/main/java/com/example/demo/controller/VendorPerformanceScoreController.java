@@ -16,7 +16,6 @@ public class VendorPerformanceScoreController {
         this.service = service;
     }
 
-    // ✅ USE YOUR METHOD HERE
     @GetMapping("/vendor/{vendorId}")
     public List<VendorPerformanceScore> getScores(@PathVariable Long vendorId) {
         return service.getScoresForVendor(vendorId);
