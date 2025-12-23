@@ -23,12 +23,12 @@ public class AuthController {
         return userService.register(email, password, role);
     }
 
-    @PostMapping("/login")
-    public String login(
-            @RequestParam String email,
-            @RequestParam String password
-    ) {
-        userService.login(email, password);
-        return "login-success";
-    }
+    // @PostMapping("/login")
+    // public String login(
+    //         @RequestParam String email,
+    //         @RequestParam String password
+    // ) {
+    //     userService.login(email, password);
+    //     return "login-success";
+    // }
 }
