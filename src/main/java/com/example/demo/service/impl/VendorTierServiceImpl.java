@@ -18,26 +18,33 @@ public class VendorTierServiceImpl implements VendorTierService {
 
     @Override
     public VendorTier createTier(VendorTier tier) {
-
-        if (repo.existsByTierName(tier.getTierName())) {
-            throw new IllegalArgumentException("unique");
-        }
-
-        if (tier.getMinScoreThreshold() < 0 || tier.getMinScoreThreshold() > 100) {
-            throw new IllegalArgumentException("between 0 and 100");
-        }
-
         return repo.save(tier);
     }
 
     @Override
-    public List<VendorTier> getAll() {
+    public VendorTier updateTier(Long id, VendorTier tier) {
+        VendorTier t = getTierById(id);
+        t.setTierName(tier.getTierName());
+        t.setMinScoreThreshold(tier.getMinScoreThreshold());
+        t.setDescription(tier.getDescription());
+        return repo.save(t);
+    }
+
+    @Override
+    public VendorTier getTierById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tier not found"));
+    }
+
+    @Override
+    public List<VendorTier> getAllTiers() {
         return repo.findAll();
     }
 
     @Override
-    public VendorTier getById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
+    public void deactivateTier(Long id) {
+        VendorTier t = getTierById(id);
+        t.setActive(false);
+        repo.save(t);
     }
 }
