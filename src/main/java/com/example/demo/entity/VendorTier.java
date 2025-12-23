@@ -1,3 +1,7 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class VendorTier {
 
@@ -9,8 +13,5 @@ public class VendorTier {
     private String tierName;
 
     private Double minScoreThreshold;
-    private String description;
     private Boolean active = true;
-
-    // getters & setters
 }

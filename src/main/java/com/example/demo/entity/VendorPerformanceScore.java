@@ -1,3 +1,7 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class VendorPerformanceScore {
 
@@ -12,12 +16,8 @@ public class VendorPerformanceScore {
     private Double qualityCompliancePercentage;
     private Double overallScore;
 
-    private Timestamp calculatedAt;
-
-    @PrePersist
-    void onCalc() {
-        calculatedAt = new Timestamp(System.currentTimeMillis());
-    }
-
-    // getters & setters
+    public void setVendor(Vendor vendor) { this.vendor = vendor; }
+    public void setOnTimePercentage(Double v) { this.onTimePercentage = v; }
+    public void setQualityCompliancePercentage(Double v) { this.qualityCompliancePercentage = v; }
+    public void setOverallScore(Double v) { this.overallScore = v; }
 }

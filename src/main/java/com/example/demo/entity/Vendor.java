@@ -1,11 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
 
 @Entity
 public class Vendor {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,24 +11,12 @@ public class Vendor {
     @Column(unique = true)
     private String name;
 
-    private String contactEmail;
-    private String contactPhone;
-
     private Boolean active = true;
 
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public Boolean getActive() { return active; }
 
-    @PrePersist
-    void onCreate() {
-        createdAt = new Timestamp(System.currentTimeMillis());
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    void onUpdate() {
-        updatedAt = new Timestamp(System.currentTimeMillis());
-    }
-
-    // getters & setters
+    public void setName(String name) { this.name = name; }
+    public void setActive(Boolean active) { this.active = active; }
 }

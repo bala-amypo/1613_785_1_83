@@ -1,3 +1,7 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class DeliveryEvaluation {
 
@@ -17,7 +21,13 @@ public class DeliveryEvaluation {
     private Boolean meetsDeliveryTarget;
     private Boolean meetsQualityTarget;
 
-    private java.util.Date evaluationDate;
+    public Vendor getVendor() { return vendor; }
+    public SLARequirement getSlaRequirement() { return slaRequirement; }
+    public Integer getActualDeliveryDays() { return actualDeliveryDays; }
+    public Double getQualityScore() { return qualityScore; }
 
-    // getters & setters
+    public void setMeetsDeliveryTarget(Boolean v) { this.meetsDeliveryTarget = v; }
+    public void setMeetsQualityTarget(Boolean v) { this.meetsQualityTarget = v; }
+    public Boolean getMeetsDeliveryTarget() { return meetsDeliveryTarget; }
+    public Boolean getMeetsQualityTarget() { return meetsQualityTarget; }
 }
