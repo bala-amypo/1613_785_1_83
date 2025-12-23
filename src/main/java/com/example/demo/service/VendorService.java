@@ -1,17 +1,38 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Vendor;
+import com.example.demo.repository.VendorRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public interface VendorService {
+@Service
+public class VendorService {
+    private final VendorRepository vendorRepo;
 
-    Vendor createVendor(Vendor vendor);
+    public VendorService(VendorRepository vendorRepo) {
+        this.vendorRepo = vendorRepo;
+    }
 
-    Vendor updateVendor(Long id, Vendor vendor);
+    public Vendor createVendor(Vendor vendor) {
+        if(vendorRepo.existsByName(vendor.getName())) {
+            throw new IllegalArgumentException("Vendor name must be unique");
+        }
+        return vendorRepo.save(vendor);
+    }
 
-    Vendor getVendorById(Long id);
+    public Vendor getVendorById(Long id) {
+        return vendorRepo.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Vendor not found"));
+    }
 
-    List<Vendor> getAllVendors();
+    public List<Vendor> getAllVendors() {
+        return vendorRepo.findAll();
+    }
 
-    void deactivateVendor(Long id);
+    public Vendor deactivateVendor(Long id) {
+        Vendor v = getVendorById(id);
+        v.setActive(false);
+        return vendorRepo.save(v);
+    }
 }
