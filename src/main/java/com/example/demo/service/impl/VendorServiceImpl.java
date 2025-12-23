@@ -10,41 +10,41 @@ import java.util.List;
 @Service
 public class VendorServiceImpl implements VendorService {
 
-    private final VendorRepository repo;
+    private final VendorRepository vendorRepo;
 
-    public VendorServiceImpl(VendorRepository repo) {
-        this.repo = repo;
+    public VendorServiceImpl(VendorRepository vendorRepo) {
+        this.vendorRepo = vendorRepo;
     }
 
     @Override
     public Vendor createVendor(Vendor vendor) {
-        return repo.save(vendor);
+        return vendorRepo.save(vendor);
     }
 
     @Override
     public Vendor updateVendor(Long id, Vendor vendor) {
-        Vendor v = getVendorById(id);
-        v.setName(vendor.getName());
-        v.setContactEmail(vendor.getContactEmail());
-        v.setContactPhone(vendor.getContactPhone());
-        return repo.save(v);
+        Vendor existing = getVendorById(id);
+        existing.setName(vendor.getName());
+        existing.setContactEmail(vendor.getContactEmail());
+        existing.setContactPhone(vendor.getContactPhone());
+        return vendorRepo.save(existing);
     }
 
     @Override
     public Vendor getVendorById(Long id) {
-        return repo.findById(id)
+        return vendorRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
     }
 
     @Override
     public List<Vendor> getAllVendors() {
-        return repo.findAll();
+        return vendorRepo.findAll();
     }
 
     @Override
-    public void deactivateVendor(Long id) {
+    public Vendor deactivateVendor(Long id) {
         Vendor v = getVendorById(id);
         v.setActive(false);
-        repo.save(v);
+        return vendorRepo.save(v);
     }
 }
