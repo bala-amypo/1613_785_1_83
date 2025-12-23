@@ -18,45 +18,45 @@ public class SLARequirementServiceImpl implements SLARequirementService {
 
     @Override
     public SLARequirement createRequirement(SLARequirement req) {
-
         if (repo.existsByRequirementName(req.getRequirementName())) {
             throw new IllegalArgumentException("unique");
         }
-
         if (req.getMaxDeliveryDays() <= 0) {
             throw new IllegalArgumentException("Max delivery days");
         }
-
         if (req.getMinQualityScore() < 0 || req.getMinQualityScore() > 100) {
-            throw new IllegalArgumentException("between 0 and 100");
+            throw new IllegalArgumentException("Quality score");
         }
-
         return repo.save(req);
     }
 
     @Override
-    public List<SLARequirement> getAll() {
-        return repo.findAll();
+    public SLARequirement updateRequirement(Long id, SLARequirement req) {
+        SLARequirement r = repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found"));
+
+        r.setDescription(req.getDescription());
+        r.setMaxDeliveryDays(req.getMaxDeliveryDays());
+        r.setMinQualityScore(req.getMinQualityScore());
+
+        return repo.save(r);
     }
 
     @Override
-    public SLARequirement getById(Long id) {
+    public SLARequirement getRequirementById(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
     }
 
     @Override
-    public SLARequirement update(Long id, SLARequirement req) {
-        SLARequirement r = getById(id);
-        r.setDescription(req.getDescription());
-        r.setMaxDeliveryDays(req.getMaxDeliveryDays());
-        r.setMinQualityScore(req.getMinQualityScore());
-        return repo.save(r);
+    public List<SLARequirement> getAllRequirements() {
+        return repo.findAll();
     }
 
     @Override
-    public void deactivate(Long id) {
-        SLARequirement r = getById(id);
+    public void deactivateRequirement(Long id) {
+        SLARequirement r = repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found"));
         r.setActive(false);
         repo.save(r);
     }
