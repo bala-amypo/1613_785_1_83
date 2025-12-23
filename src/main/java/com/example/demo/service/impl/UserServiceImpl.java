@@ -1,42 +1,37 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.Vendor;
-import com.example.demo.repository.VendorRepository;
-import com.example.demo.service.VendorService;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
-public class VendorServiceImpl implements VendorService {
+public class UserServiceImpl implements UserService {
 
-    private final VendorRepository vendorRepo;
+    private final UserRepository userRepository;
 
-    public VendorServiceImpl(VendorRepository vendorRepo) {
-        this.vendorRepo = vendorRepo;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Vendor createVendor(Vendor vendor) {
-        if(vendorRepo.existsByName(vendor.getName())) {
-            throw new IllegalArgumentException("unique");
-        }
-        return vendorRepo.save(vendor);
+    public User register(String email, String password, String role) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setRole(role);
+        return userRepository.save(user);
     }
 
     @Override
-    public Vendor getVendorById(Long id) {
-        return vendorRepo.findById(id).orElseThrow(() -> new IllegalStateException("not found"));
+    public User login(String email, String password) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     @Override
-    public List<Vendor> getAllVendors() {
-        return vendorRepo.findAll();
-    }
-
-    @Override
-    public Vendor deactivateVendor(Long id) {
-        Vendor v = getVendorById(id);
-        v.setActive(false);
-        return vendorRepo.save(v);
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 }
