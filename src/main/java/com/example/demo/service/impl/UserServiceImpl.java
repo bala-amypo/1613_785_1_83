@@ -15,35 +15,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(String email, String password, String role) {
-
-        if (repo.existsByEmail(email)) {
-            throw new IllegalArgumentException("unique");
+    public User register(User user) {
+        if (repo.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
         }
-
-        User u = new User();
-        u.setEmail(email);
-        u.setPassword(password);
-        u.setRole(role);
-
-        return repo.save(u);
+        return repo.save(user);
     }
 
     @Override
     public User login(String email, String password) {
-        User u = repo.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
-
-        if (!u.getPassword().equals(password)) {
-            throw new IllegalArgumentException("not found");
+        User u = repo.findByEmail(email);
+        if (u == null || !u.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Invalid credentials");
         }
-
         return u;
-    }
-
-    @Override
-    public User getByEmail(String email) {
-        return repo.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
     }
 }

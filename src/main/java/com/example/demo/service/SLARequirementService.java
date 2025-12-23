@@ -7,11 +7,11 @@ public interface SLARequirementService {
 
     SLARequirement createRequirement(SLARequirement req);
 
-    List<SLARequirement> getAll();
+    SLARequirement updateRequirement(Long id, SLARequirement req);
 
-    SLARequirement getById(Long id);
+    SLARequirement getRequirementById(Long id);
 
-    SLARequirement update(Long id, SLARequirement req);
+    List<SLARequirement> getAllRequirements();
 
-    void deactivate(Long id);
+    void deactivateRequirement(Long id);
 }
