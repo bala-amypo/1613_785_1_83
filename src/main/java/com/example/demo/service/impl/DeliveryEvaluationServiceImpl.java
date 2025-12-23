@@ -1,14 +1,3 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.entity.DeliveryEvaluation;
-import com.example.demo.repository.DeliveryEvaluationRepository;
-import com.example.demo.repository.SLARequirementRepository;
-import com.example.demo.repository.VendorRepository;
-import com.example.demo.service.DeliveryEvaluationService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 @Service
 public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService {
 
@@ -26,45 +15,25 @@ public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService 
         this.slaRepo = slaRepo;
     }
 
-    @Override
-    public DeliveryEvaluation createEvaluation(DeliveryEvaluation evaluation) {
+    public DeliveryEvaluation createEvaluation(DeliveryEvaluation e) {
 
-        if (!evaluation.getVendor().getActive()) {
-            throw new IllegalStateException("active vendors");
-        }
+        if (!e.getVendor().getActive())
+            throw new IllegalStateException("Only active vendors allowed");
 
-        if (evaluation.getActualDeliveryDays() < 0) {
+        if (e.getActualDeliveryDays() < 0)
             throw new IllegalArgumentException(">= 0");
-        }
 
-        if (evaluation.getQualityScore() < 0 || evaluation.getQualityScore() > 100) {
-            throw new IllegalArgumentException("Quality score");
-        }
+        if (e.getQualityScore() < 0 || e.getQualityScore() > 100)
+            throw new IllegalArgumentException("Quality score between 0 and 100");
 
-        evaluation.setMeetsDeliveryTarget(
-                evaluation.getActualDeliveryDays()
-                        <= evaluation.getSlaRequirement().getMaxDeliveryDays());
+        SLARequirement sla = e.getSlaRequirement();
 
-        evaluation.setMeetsQualityTarget(
-                evaluation.getQualityScore()
-                        >= evaluation.getSlaRequirement().getMinQualityScore());
+        e.setMeetsDeliveryTarget(
+                e.getActualDeliveryDays() <= sla.getMaxDeliveryDays());
 
-        return evalRepo.save(evaluation);
-    }
+        e.setMeetsQualityTarget(
+                e.getQualityScore() >= sla.getMinQualityScore());
 
-    @Override
-    public DeliveryEvaluation getEvaluationById(Long id) {
-        return evalRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found"));
-    }
-
-    @Override
-    public List<DeliveryEvaluation> getEvaluationsForVendor(Long vendorId) {
-        return evalRepo.findByVendorId(vendorId);
-    }
-
-    @Override
-    public List<DeliveryEvaluation> getEvaluationsForRequirement(Long requirementId) {
-        return evalRepo.findBySlaRequirementId(requirementId);
+        return evalRepo.save(e);
     }
 }
