@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 public class VendorPerformanceScore {
@@ -12,12 +13,22 @@ public class VendorPerformanceScore {
     @ManyToOne
     private Vendor vendor;
 
-    private Double onTimePercentage;
-    private Double qualityCompliancePercentage;
-    private Double overallScore;
+    private double score;
 
-    public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public void setOnTimePercentage(Double v) { this.onTimePercentage = v; }
-    public void setQualityCompliancePercentage(Double v) { this.qualityCompliancePercentage = v; }
-    public void setOverallScore(Double v) { this.overallScore = v; }
+    private Timestamp calculatedAt;
+
+    // ✅ REQUIRED setters
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public void setCalculatedAt(Timestamp calculatedAt) {
+        this.calculatedAt = calculatedAt;
+    }
+
+    // getters optional but recommended
 }
