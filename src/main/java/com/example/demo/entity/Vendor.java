@@ -1,8 +1,10 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import java.sql.Timestamp;
 
+@Data
 @Entity
 public class Vendor {
     @Id
@@ -18,6 +20,4 @@ public class Vendor {
 
     private Timestamp createdAt;
     private Timestamp updatedAt;
-
-    // Getters and Setters
 }

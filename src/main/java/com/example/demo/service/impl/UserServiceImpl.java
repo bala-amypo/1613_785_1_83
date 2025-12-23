@@ -1,48 +1,34 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
-import org.springframework.stereotype.Service;
-
 @Service
-public class UserServiceImpl implements UserService {
+public class VendorServiceImpl implements VendorService {
 
-    private final UserRepository repo;
+    private final VendorRepository vendorRepo;
 
-    public UserServiceImpl(UserRepository repo) {
-        this.repo = repo;
+    public VendorServiceImpl(VendorRepository vendorRepo) {
+        this.vendorRepo = vendorRepo;
     }
 
     @Override
-    public User register(String email, String password, String role) {
-        if (repo.existsByEmail(email)) {
+    public Vendor createVendor(Vendor vendor) {
+        if(vendorRepo.existsByName(vendor.getName())) {
             throw new IllegalArgumentException("unique");
         }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole(role);
-
-        return repo.save(user);
+        return vendorRepo.save(vendor);
     }
 
-    // @Override
-    // public User login(String email, String password) {
-    //     User user = repo.findByEmail(email);
-    //     if (user == null || !user.getPassword().equals(password)) {
-    //         throw new IllegalArgumentException("not found");
-    //     }
-    //     return user;
-    // }
+    @Override
+    public Vendor getVendorById(Long id) {
+        return vendorRepo.findById(id).orElseThrow(() -> new IllegalStateException("not found"));
+    }
 
     @Override
-    public User getByEmail(String email) {
-        User user = repo.findByEmail(email);
-        if (user == null) {
-            throw new IllegalArgumentException("not found");
-        }
-        return user;
+    public List<Vendor> getAllVendors() {
+        return vendorRepo.findAll();
+    }
+
+    @Override
+    public Vendor deactivateVendor(Long id) {
+        Vendor v = getVendorById(id);
+        v.setActive(false);
+        return vendorRepo.save(v);
     }
 }

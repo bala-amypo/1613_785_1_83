@@ -1,7 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class SLARequirement {
     @Id
@@ -15,6 +17,4 @@ public class SLARequirement {
     private Integer maxDeliveryDays;
     private Double minQualityScore;
     private Boolean active = true;
-
-    // Getters and Setters
 }
