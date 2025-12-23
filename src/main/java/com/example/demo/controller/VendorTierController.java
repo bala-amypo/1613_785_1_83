@@ -9,38 +9,37 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tiers")
-@Tag(name = "Vendor Tiers")
+@Tag(name = "Vendor Tiers", description = "Manage vendor tiers")
 public class VendorTierController {
 
-    private final VendorTierService service;
+    private final VendorTierService tierService;
 
-    public VendorTierController(VendorTierService service) {
-        this.service = service;
+    public VendorTierController(VendorTierService tierService) {
+        this.tierService = tierService;
     }
 
     @PostMapping
-    public VendorTier create(@RequestBody VendorTier tier) {
-        return service.createTier(tier);
-    }
-
-    @PutMapping("/{id}")
-    public VendorTier update(@PathVariable Long id,
-                             @RequestBody VendorTier tier) {
-        return service.updateTier(id, tier);
+    public VendorTier createTier(@RequestBody VendorTier tier) {
+        return tierService.createTier(tier);
     }
 
     @GetMapping("/{id}")
-    public VendorTier get(@PathVariable Long id) {
-        return service.getTierById(id);
+    public VendorTier getTier(@PathVariable Long id) {
+        return tierService.getTierById(id);
     }
 
     @GetMapping
-    public List<VendorTier> list() {
-        return service.getAllTiers();
+    public List<VendorTier> getAllTiers() {
+        return tierService.getAllTiers();
+    }
+
+    @PutMapping("/{id}")
+    public VendorTier updateTier(@PathVariable Long id, @RequestBody VendorTier tier) {
+        return tierService.updateTier(id, tier);
     }
 
     @PutMapping("/{id}/deactivate")
-    public void deactivate(@PathVariable Long id) {
-        service.deactivateTier(id);
+    public VendorTier deactivateTier(@PathVariable Long id) {
+        return tierService.deactivateTier(id);
     }
 }

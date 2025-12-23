@@ -9,38 +9,32 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/sla-requirements")
-@Tag(name = "SLA Requirements")
+@Tag(name = "SLA Requirements", description = "Manage SLA requirements")
 public class SLARequirementController {
 
-    private final SLARequirementService service;
+    private final SLARequirementService slaService;
 
-    public SLARequirementController(SLARequirementService service) {
-        this.service = service;
+    public SLARequirementController(SLARequirementService slaService) {
+        this.slaService = slaService;
     }
 
     @PostMapping
-    public SLARequirement create(@RequestBody SLARequirement req) {
-        return service.createRequirement(req);
-    }
-
-    @PutMapping("/{id}")
-    public SLARequirement update(@PathVariable Long id,
-                                 @RequestBody SLARequirement req) {
-        return service.updateRequirement(id, req);
+    public SLARequirement createRequirement(@RequestBody SLARequirement req) {
+        return slaService.createRequirement(req);
     }
 
     @GetMapping("/{id}")
-    public SLARequirement get(@PathVariable Long id) {
-        return service.getRequirementById(id);
+    public SLARequirement getRequirement(@PathVariable Long id) {
+        return slaService.getRequirementById(id);
     }
 
     @GetMapping
-    public List<SLARequirement> list() {
-        return service.getAllRequirements();
+    public List<SLARequirement> getAllRequirements() {
+        return slaService.getAllRequirements();
     }
 
     @PutMapping("/{id}/deactivate")
-    public void deactivate(@PathVariable Long id) {
-        service.deactivateRequirement(id);
+    public SLARequirement deactivateRequirement(@PathVariable Long id) {
+        return slaService.deactivateRequirement(id);
     }
 }

@@ -1,17 +1,53 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.VendorTier;
+import com.example.demo.repository.VendorTierRepository;
+import com.example.demo.service.VendorTierService;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
-public interface VendorTierService {
+@Service
+public class VendorTierServiceImpl implements VendorTierService {
 
-    VendorTier createTier(VendorTier tier);
+    private final VendorTierRepository tierRepo;
 
-    VendorTier updateTier(Long id, VendorTier tier);
+    public VendorTierServiceImpl(VendorTierRepository tierRepo) {
+        this.tierRepo = tierRepo;
+    }
 
-    VendorTier getTierById(Long id);
+    @Override
+    public VendorTier createTier(VendorTier tier) {
+        if (tierRepo.existsByTierName(tier.getTierName())) {
+            throw new IllegalArgumentException("unique");
+        }
+        if(tier.getMinScoreThreshold() < 0 || tier.getMinScoreThreshold() > 100)
+            throw new IllegalArgumentException("Min score 0-100");
+        return tierRepo.save(tier);
+    }
 
-    List<VendorTier> getAllTiers();
+    @Override
+    public VendorTier getTierById(Long id) {
+        return tierRepo.findById(id).orElseThrow(() -> new IllegalStateException("not found"));
+    }
 
-    void deactivateTier(Long id);
+    @Override
+    public List<VendorTier> getAllTiers() {
+        return tierRepo.findByActiveTrueOrderByMinScoreThresholdDesc();
+    }
+
+    @Override
+    public VendorTier updateTier(Long id, VendorTier tier) {
+        VendorTier existing = getTierById(id);
+        existing.setTierName(tier.getTierName());
+        existing.setDescription(tier.getDescription());
+        existing.setMinScoreThreshold(tier.getMinScoreThreshold());
+        return tierRepo.save(existing);
+    }
+
+    @Override
+    public VendorTier deactivateTier(Long id) {
+        VendorTier t = getTierById(id);
+        t.setActive(false);
+        return tierRepo.save(t);
+    }
 }
