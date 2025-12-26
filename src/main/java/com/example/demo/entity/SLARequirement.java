@@ -1,67 +1,34 @@
-package com.example.demo.entity;
+package com.example.demo.model;
 
-import jakarta.persistence.*;
-
-@Entity
 public class SLARequirement {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(unique = true, nullable = false)
     private String requirementName;
-
     private String description;
     private Integer maxDeliveryDays;
-    private Integer minQualityScore;
+    private Double minQualityScore;
     private Boolean active = true;
 
-    public Long getId() {
-        return id;
+    public SLARequirement() {}
+
+    public SLARequirement(String name, String desc, Integer days, Double score) {
+        this.requirementName = name;
+        this.description = desc;
+        this.maxDeliveryDays = days;
+        this.minQualityScore = score;
     }
 
-    public String getRequirementName() {
-        return requirementName;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getRequirementName() { return requirementName; }
+    public void setRequirementName(String requirementName) { this.requirementName = requirementName; }
 
-    public Integer getMaxDeliveryDays() {
-        return maxDeliveryDays;
-    }
+    public String getDescription() { return description; }
 
-    public Integer getMinQualityScore() {
-        return minQualityScore;
-    }
+    public Integer getMaxDeliveryDays() { return maxDeliveryDays; }
 
-    public Boolean getActive() {
-        return active;
-    }
+    public Double getMinQualityScore() { return minQualityScore; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setRequirementName(String requirementName) {
-        this.requirementName = requirementName;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setMaxDeliveryDays(Integer maxDeliveryDays) {
-        this.maxDeliveryDays = maxDeliveryDays;
-    }
-
-    public void setMinQualityScore(Integer minQualityScore) {
-        this.minQualityScore = minQualityScore;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }
