@@ -13,22 +13,33 @@ public class VendorTier {
     private String tierName;
 
     @Column(nullable = false)
-    private double minScoreThreshold;
+    private Double minScoreThreshold;
+
+    private String description;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active = true;
 
+    // REQUIRED: No-arg constructor
     public VendorTier() {
     }
 
-    public VendorTier(String tierName, double minScoreThreshold) {
+    // REQUIRED by tests
+    public VendorTier(String tierName, Double minScoreThreshold, String description) {
         this.tierName = tierName;
         this.minScoreThreshold = minScoreThreshold;
+        this.description = description;
         this.active = true;
     }
 
+    // REQUIRED setters/getters
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {   // REQUIRED
+        this.id = id;
     }
 
     public String getTierName() {
@@ -39,19 +50,27 @@ public class VendorTier {
         this.tierName = tierName;
     }
 
-    public double getMinScoreThreshold() {
+    public Double getMinScoreThreshold() {
         return minScoreThreshold;
     }
 
-    public void setMinScoreThreshold(double minScoreThreshold) {
+    public void setMinScoreThreshold(Double minScoreThreshold) {
         this.minScoreThreshold = minScoreThreshold;
     }
 
-    public boolean isActive() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getActive() {   // MUST be getActive()
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 }
