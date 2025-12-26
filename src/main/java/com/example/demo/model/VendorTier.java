@@ -15,12 +15,16 @@ public class VendorTier {
     @Column(nullable = false)
     private double minScoreThreshold;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     public VendorTier() {
     }
 
     public VendorTier(String tierName, double minScoreThreshold) {
         this.tierName = tierName;
         this.minScoreThreshold = minScoreThreshold;
+        this.active = true;
     }
 
     public Long getId() {
@@ -41,5 +45,13 @@ public class VendorTier {
 
     public void setMinScoreThreshold(double minScoreThreshold) {
         this.minScoreThreshold = minScoreThreshold;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
