@@ -1,52 +1,60 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.DeliveryEvaluation;
-import com.example.demo.entity.SLARequirement;
-import com.example.demo.entity.Vendor;
+import com.example.demo.model.DeliveryEvaluation;
+import com.example.demo.model.SLARequirement;
+import com.example.demo.model.Vendor;
 import com.example.demo.repository.DeliveryEvaluationRepository;
 import com.example.demo.repository.SLARequirementRepository;
 import com.example.demo.repository.VendorRepository;
 import com.example.demo.service.DeliveryEvaluationService;
-import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-@Service
 public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService {
 
     private final DeliveryEvaluationRepository evalRepo;
     private final VendorRepository vendorRepo;
     private final SLARequirementRepository slaRepo;
 
-    public DeliveryEvaluationServiceImpl(DeliveryEvaluationRepository evalRepo,
-                                         VendorRepository vendorRepo,
-                                         SLARequirementRepository slaRepo) {
+    public DeliveryEvaluationServiceImpl(
+            DeliveryEvaluationRepository evalRepo,
+            VendorRepository vendorRepo,
+            SLARequirementRepository slaRepo) {
         this.evalRepo = evalRepo;
         this.vendorRepo = vendorRepo;
         this.slaRepo = slaRepo;
     }
 
     @Override
-    public DeliveryEvaluation createEvaluation(DeliveryEvaluation evaluation) {
-        Vendor vendor = vendorRepo.findById(evaluation.getVendor().getId())
-                .orElseThrow(() -> new IllegalStateException("not found"));
-        if(!vendor.getActive()) throw new IllegalStateException("active vendors");
+    public DeliveryEvaluation createEvaluation(DeliveryEvaluation eval) {
 
-        SLARequirement sla = slaRepo.findById(evaluation.getSlaRequirement().getId())
-                .orElseThrow(() -> new IllegalStateException("not found"));
+        Vendor vendor = vendorRepo.findById(eval.getVendor().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
 
-        if(evaluation.getActualDeliveryDays() < 0) throw new IllegalArgumentException("Max delivery days >= 0");
-        if(evaluation.getQualityScore() < 0 || evaluation.getQualityScore() > 100)
-            throw new IllegalArgumentException("Quality score between 0 and 100");
+        if (!vendor.getActive()) {
+            throw new IllegalStateException("Only active vendors allowed");
+        }
 
-        evaluation.setMeetsDeliveryTarget(evaluation.getActualDeliveryDays() <= sla.getMaxDeliveryDays());
-        evaluation.setMeetsQualityTarget(evaluation.getQualityScore() >= sla.getMinQualityScore());
+        SLARequirement sla = slaRepo.findById(eval.getSlaRequirement().getId())
+                .orElseThrow(() -> new IllegalArgumentException("SLA not found"));
 
-        return evalRepo.save(evaluation);
-    }
+        if (eval.getActualDeliveryDays() < 0) {
+            throw new IllegalArgumentException("Actual delivery days must be >= 0");
+        }
 
-    @Override
-    public DeliveryEvaluation getEvaluationById(Long id) {
-        return evalRepo.findById(id).orElseThrow(() -> new IllegalStateException("not found"));
+        if (eval.getQualityScore() < 0 || eval.getQualityScore() > 100) {
+            throw new IllegalArgumentException("Quality score must be between 0 and 100");
+        }
+
+        eval.setMeetsDeliveryTarget(
+                eval.getActualDeliveryDays() <= sla.getMaxDeliveryDays()
+        );
+
+        eval.setMeetsQualityTarget(
+                eval.getQualityScore() >= sla.getMinQualityScore()
+        );
+
+        return evalRepo.save(eval);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService 
     }
 
     @Override
-    public List<DeliveryEvaluation> getEvaluationsForRequirement(Long requirementId) {
-        return evalRepo.findBySlaRequirementId(requirementId);
+    public List<DeliveryEvaluation> getEvaluationsForRequirement(Long slaId) {
+        return evalRepo.findBySlaRequirementId(slaId);
     }
 }
