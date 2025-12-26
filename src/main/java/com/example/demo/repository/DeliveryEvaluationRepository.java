@@ -1,0 +1,21 @@
+package com.example.demo.repository;
+
+import com.example.demo.model.DeliveryEvaluation;
+import com.example.demo.model.SLARequirement;
+import com.example.demo.model.Vendor;
+
+import java.util.List;
+
+public interface DeliveryEvaluationRepository {
+
+    DeliveryEvaluation save(DeliveryEvaluation evaluation);
+
+    List<DeliveryEvaluation> findByVendorId(Long vendorId);
+
+    List<DeliveryEvaluation> findBySlaRequirementId(Long slaId);
+
+    // HQL / HCQL style queries (mocked in tests)
+    List<DeliveryEvaluation> findHighQualityDeliveries(Vendor vendor, Double minQuality);
+
+    List<DeliveryEvaluation> findOnTimeDeliveries(SLARequirement sla);
+}
