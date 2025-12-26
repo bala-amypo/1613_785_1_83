@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.DeliveryEvaluation;
+import com.example.demo.model.DeliveryEvaluation;
+
 import java.util.List;
 
 public interface DeliveryEvaluationService {
-    DeliveryEvaluation createEvaluation(DeliveryEvaluation evaluation);
-    DeliveryEvaluation getEvaluationById(Long id);
+
+    DeliveryEvaluation createEvaluation(DeliveryEvaluation eval);
+
     List<DeliveryEvaluation> getEvaluationsForVendor(Long vendorId);
-    List<DeliveryEvaluation> getEvaluationsForRequirement(Long requirementId);
+
+    List<DeliveryEvaluation> getEvaluationsForRequirement(Long slaId);
 }
