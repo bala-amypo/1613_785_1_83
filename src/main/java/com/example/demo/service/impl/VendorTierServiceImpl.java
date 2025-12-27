@@ -47,4 +47,9 @@ public class VendorTierServiceImpl implements VendorTierService {
         vendor.setActive(false);
         vendorRepository.save(vendor);
     }
+    @Override
+public void assignTier(Long vendorId) {
+    // implement the logic here
+}
+
 }
