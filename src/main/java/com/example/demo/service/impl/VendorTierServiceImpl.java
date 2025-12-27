@@ -48,7 +48,7 @@ public class VendorTierServiceImpl implements VendorTierService {
         vendorRepository.save(vendor);
     }
     @Override
-public void assignTier(Long vendorId) {
+public String assignTier(Long vendorId){
     // implement the logic here
 }
 
