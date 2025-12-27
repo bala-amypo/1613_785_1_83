@@ -38,4 +38,13 @@ public class VendorTierServiceImpl implements VendorTierService {
     public String getCurrentTier(Long vendorId) {
         return calculateTier(vendorId);
     }
+
+    @Override
+    public void deactivateTier(Long vendorId) {
+        // Tier deactivation logic (placeholder for tests)
+        Vendor vendor = vendorRepository.findById(vendorId)
+            .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+        vendor.setActive(false);
+        vendorRepository.save(vendor);
+    }
 }
