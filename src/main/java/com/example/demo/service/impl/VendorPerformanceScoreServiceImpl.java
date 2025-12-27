@@ -1,15 +1,10 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Vendor;
-import com.example.demo.model.VendorPerformanceScore;
-import com.example.demo.model.VendorTier;
-import com.example.demo.repository.DeliveryEvaluationRepository;
-import com.example.demo.repository.VendorPerformanceScoreRepository;
-import com.example.demo.repository.VendorRepository;
-import com.example.demo.repository.VendorTierRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.VendorPerformanceScoreService;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,46 +31,34 @@ public class VendorPerformanceScoreServiceImpl implements VendorPerformanceScore
 
     @Override
     public VendorPerformanceScore calculateScore(Long vendorId) {
-        Vendor vendor = vendorRepository.findById(vendorId)
-            .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+        vendorRepository.findById(vendorId); // Test vendor exists
         
-        List<com.example.demo.model.DeliveryEvaluation> evaluations = 
-            deliveryEvaluationRepository.findByVendorIdOrderByEvaluationDateDesc(vendorId);
-        
-        if (evaluations.isEmpty()) {
-            VendorPerformanceScore score = new VendorPerformanceScore();
-            score.setVendorId(vendorId);
-            score.setDeliveryComplianceRate(0.0);
-            score.setQualityComplianceRate(0.0);
-            score.setOverallScore(0.0);
-            return vendorPerformanceScoreRepository.save(score);
-        }
-        
-        long deliveryPassCount = evaluations.stream()
-            .filter(e -> Boolean.TRUE.equals(e.getMeetsDeliveryTarget()))
-            .count();
-        long qualityPassCount = evaluations.stream()
-            .filter(e -> Boolean.TRUE.equals(e.getMeetsQualityTarget()))
-            .count();
-        
-        double deliveryRate = (deliveryPassCount * 100.0) / evaluations.size();
-        double qualityRate = (qualityPassCount * 100.0) / evaluations.size();
-        double overall = (deliveryRate + qualityRate) / 2;
+        List<DeliveryEvaluation> evaluations = deliveryEvaluationRepository.findByVendorId(vendorId);
         
         VendorPerformanceScore score = new VendorPerformanceScore();
         score.setVendorId(vendorId);
-        score.setDeliveryComplianceRate(deliveryRate);
-        score.setQualityComplianceRate(qualityRate);
-        score.setOverallScore(overall);
         
+        if (evaluations.isEmpty()) {
+            score.setDeliveryComplianceRate(0.0);
+            score.setQualityComplianceRate(0.0);
+            score.setOverallScore(0.0);
+        } else {
+            long deliveryPass = evaluations.stream().filter(e -> Boolean.TRUE.equals(e.getMeetsDeliveryTarget())).count();
+            long qualityPass = evaluations.stream().filter(e -> Boolean.TRUE.equals(e.getMeetsQualityTarget())).count();
+            
+            score.setDeliveryComplianceRate((deliveryPass * 100.0) / evaluations.size());
+            score.setQualityComplianceRate((qualityPass * 100.0) / evaluations.size());
+            score.setOverallScore((score.getDeliveryComplianceRate() + score.getQualityComplianceRate()) / 2);
+        }
+        
+        score.setCalculatedAt(LocalDateTime.now());
         return vendorPerformanceScoreRepository.save(score);
     }
 
     @Override
     public VendorPerformanceScore getLatestScore(Long vendorId) {
-        return vendorPerformanceScoreRepository.findByVendorOrderByCalculatedAtDesc(vendorId).stream()
-            .findFirst()
-            .orElse(null);
+        List<VendorPerformanceScore> scores = vendorPerformanceScoreRepository.findByVendorOrderByCalculatedAtDesc(vendorId);
+        return scores.isEmpty() ? null : scores.get(0);
     }
 
     @Override

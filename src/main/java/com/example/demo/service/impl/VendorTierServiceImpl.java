@@ -6,6 +6,8 @@ import com.example.demo.repository.VendorPerformanceScoreRepository;
 import com.example.demo.repository.VendorTierRepository;
 import com.example.demo.service.VendorTierService;
 import org.springframework.stereotype.Service;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class VendorTierServiceImpl implements VendorTierService {
@@ -29,11 +31,14 @@ public class VendorTierServiceImpl implements VendorTierService {
 
     @Override
     public String assignTier(Long vendorId) {
-        VendorPerformanceScore latestScore = vendorPerformanceScoreRepository.findLatestByVendorId(vendorId)
-            .orElseThrow(() -> new IllegalArgumentException("No performance score found"));
+        VendorPerformanceScore score = vendorPerformanceScoreRepository.findLatestByVendorId(vendorId).orElse(null);
+        if (score == null) {
+            return "BRONZE"; // Default tier
+        }
         
-        return vendorTierRepository.findByActiveTrueOrderByMinOverallScoreDesc().stream()
-            .filter(tier -> latestScore.getOverallScore() >= tier.getMinOverallScore())
+        List<VendorTier> tiers = vendorTierRepository.findByActiveTrueOrderByMinOverallScoreDesc();
+        return tiers.stream()
+            .filter(tier -> score.getOverallScore() >= tier.getMinOverallScore())
             .findFirst()
             .map(VendorTier::getTierName)
             .orElse("BRONZE");
