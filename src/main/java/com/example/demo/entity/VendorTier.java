@@ -1,27 +1,44 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class VendorTier {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String tierName;
-    private Double minScoreThreshold;
-    private String description;
-    private Boolean active = true;
+
+    @Column(nullable = false)
+    private double minScoreThreshold;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     public VendorTier() {}
 
-    public VendorTier(String name, Double score, String desc) {
-        this.tierName = name;
-        this.minScoreThreshold = score;
-        this.description = desc;
+    public VendorTier(String tierName, double minScoreThreshold) {
+        this.tierName = tierName;
+        this.minScoreThreshold = minScoreThreshold;
+        this.active = true;
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getTierName() { return tierName; }
-    public Double getMinScoreThreshold() { return minScoreThreshold; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public void setTierName(String tierName) { this.tierName = tierName; }
+
+    public double getMinScoreThreshold() { return minScoreThreshold; }
+
+    public void setMinScoreThreshold(double minScoreThreshold) {
+        this.minScoreThreshold = minScoreThreshold;
+    }
+
+    public boolean isActive() { return active; }
+
+    public void setActive(boolean active) { this.active = active; }
 }
