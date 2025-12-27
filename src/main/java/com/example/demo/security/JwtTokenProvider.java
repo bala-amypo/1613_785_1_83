@@ -1,44 +1,46 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-
-import java.security.Key;
-import java.util.Date;
+import java.util.*;
 
 public class JwtTokenProvider {
 
-    private final Key key;
-    private final long validityInMillis;
+    private final String secretKey;
+    private final long validityInMs;
 
-  
-    public JwtTokenProvider(String secret, long validityInMillis) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.validityInMillis = validityInMillis;
+    public JwtTokenProvider(String secretKey, long validityInMs) {
+        this.secretKey = secretKey;
+        this.validityInMs = validityInMs;
     }
 
-    public String createToken(String username, String role, long vendorId) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String email, String role, Long userId) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("email", email);
         claims.put("role", role);
-        claims.put("vendorId", vendorId);
+        claims.put("userId", userId);
 
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + validityInMillis);
+        Date expiry = new Date(now.getTime() + validityInMs);
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser().setSigningKey(secretKey)
+                .parseClaimsJws(token).getBody();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

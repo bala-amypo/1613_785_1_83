@@ -1,21 +1,12 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
 public class DeliveryEvaluation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
     private Vendor vendor;
-
-    @ManyToOne
     private SLARequirement slaRequirement;
-
     private Integer actualDeliveryDays;
     private Double qualityScore;
     private Boolean meetsDeliveryTarget;
