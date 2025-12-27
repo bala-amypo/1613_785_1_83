@@ -26,16 +26,18 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public Vendor updateVendor(Long id, Vendor vendor) {
+    public Vendor updateVendor(Long id, Vendor update) {
         Vendor existing = vendorRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-        if (vendor.getName() != null && !vendor.getName().equals(existing.getName()) &&
-            vendorRepository.existsByName(vendor.getName())) {
-            throw new IllegalArgumentException("Vendor name must be unique");
+        if (update.getName() != null && !update.getName().equals(existing.getName())) {
+            if (vendorRepository.existsByName(update.getName())) {
+                throw new IllegalArgumentException("Vendor name must be unique");
+            }
+            existing.setName(update.getName());
         }
-        if (vendor.getName() != null) existing.setName(vendor.getName());
-        if (vendor.getContactEmail() != null) existing.setContactEmail(vendor.getContactEmail());
-        if (vendor.getContactPhone() != null) existing.setContactPhone(vendor.getContactPhone());
+        if (update.getContactEmail() != null) existing.setContactEmail(update.getContactEmail());
+        if (update.getContactPhone() != null) existing.setContactPhone(update.getContactPhone());
+
         return vendorRepository.save(existing);
     }
 

@@ -4,6 +4,7 @@ import com.example.demo.model.SLARequirement;
 import com.example.demo.repository.SLARequirementRepository;
 import com.example.demo.service.SLARequirementService;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -17,32 +18,32 @@ public class SLARequirementServiceImpl implements SLARequirementService {
 
     @Override
     public SLARequirement createRequirement(SLARequirement requirement) {
+        if (requirement.getMaxDeliveryDays() <= 0) {
+            throw new IllegalArgumentException("Max delivery days must be > 0");
+        }
+        if (requirement.getQualityScore() < 0 || requirement.getQualityScore() > 100) {
+            throw new IllegalArgumentException("Quality score must be between 0 and 100");
+        }
         if (slaRequirementRepository.existsByRequirementName(requirement.getRequirementName())) {
             throw new IllegalArgumentException("SLA Requirement name must be unique");
-        }
-        if (requirement.getMaxDeliveryDays() == null || requirement.getMaxDeliveryDays() <= 0) {
-            throw new IllegalArgumentException("Max delivery days must be >= 1");
-        }
-        if (requirement.getQualityScoreThreshold() < 0 || requirement.getQualityScoreThreshold() > 100) {
-            throw new IllegalArgumentException("Quality score must be between 0 and 100");
         }
         requirement.setActive(true);
         return slaRequirementRepository.save(requirement);
     }
 
     @Override
-    public SLARequirement updateRequirement(Long id, SLARequirement requirement) {
+    public SLARequirement updateRequirement(Long id, SLARequirement update) {
         SLARequirement existing = slaRequirementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
-
-        if (requirement.getRequirementName() != null && !requirement.getRequirementName().equals(existing.getRequirementName()) &&
-            slaRequirementRepository.existsByRequirementName(requirement.getRequirementName())) {
-            throw new IllegalArgumentException("SLA Requirement name must be unique");
+        if (update.getRequirementName() != null && !update.getRequirementName().equals(existing.getRequirementName())) {
+            if (slaRequirementRepository.existsByRequirementName(update.getRequirementName())) {
+                throw new IllegalArgumentException("SLA Requirement name must be unique");
+            }
+            existing.setRequirementName(update.getRequirementName());
         }
-        if (requirement.getRequirementName() != null) existing.setRequirementName(requirement.getRequirementName());
-        if (requirement.getMaxDeliveryDays() != null) existing.setMaxDeliveryDays(requirement.getMaxDeliveryDays());
-        if (requirement.getQualityScoreThreshold() != null) existing.setQualityScoreThreshold(requirement.getQualityScoreThreshold());
-        if (requirement.getDescription() != null) existing.setDescription(requirement.getDescription());
+        if (update.getMaxDeliveryDays() > 0) existing.setMaxDeliveryDays(update.getMaxDeliveryDays());
+        if (update.getQualityScore() >= 0 && update.getQualityScore() <= 100) existing.setQualityScore(update.getQualityScore());
+        if (update.getDescription() != null) existing.setDescription(update.getDescription());
 
         return slaRequirementRepository.save(existing);
     }

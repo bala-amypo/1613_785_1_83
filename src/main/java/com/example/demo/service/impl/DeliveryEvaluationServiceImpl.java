@@ -14,47 +14,57 @@ import java.util.List;
 @Service
 public class DeliveryEvaluationServiceImpl implements DeliveryEvaluationService {
 
-    private final DeliveryEvaluationRepository evaluationRepo;
-    private final VendorRepository vendorRepo;
-    private final SLARequirementRepository slaRepo;
+    private final DeliveryEvaluationRepository evaluationRepository;
+    private final VendorRepository vendorRepository;
+    private final SLARequirementRepository slaRequirementRepository;
 
-    public DeliveryEvaluationServiceImpl(DeliveryEvaluationRepository evaluationRepo,
-                                         VendorRepository vendorRepo,
-                                         SLARequirementRepository slaRepo) {
-        this.evaluationRepo = evaluationRepo;
-        this.vendorRepo = vendorRepo;
-        this.slaRepo = slaRepo;
+    public DeliveryEvaluationServiceImpl(
+            DeliveryEvaluationRepository evaluationRepository,
+            VendorRepository vendorRepository,
+            SLARequirementRepository slaRequirementRepository
+    ) {
+        this.evaluationRepository = evaluationRepository;
+        this.vendorRepository = vendorRepository;
+        this.slaRequirementRepository = slaRequirementRepository;
     }
 
     @Override
-    public DeliveryEvaluation createEvaluation(DeliveryEvaluation eval) {
-        Vendor vendor = vendorRepo.findById(eval.getVendor().getId())
+    public DeliveryEvaluation createEvaluation(DeliveryEvaluation evaluation) {
+        Vendor vendor = vendorRepository.findById(evaluation.getVendor().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-        if (!vendor.getActive()) throw new IllegalStateException("Only active vendors allowed");
 
-        SLARequirement sla = slaRepo.findById(eval.getSlaRequirement().getId())
+        SLARequirement sla = slaRequirementRepository.findById(evaluation.getSlaRequirement().getId())
                 .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
-        if (!sla.getActive()) throw new IllegalStateException("Only active SLA allowed");
 
-        if (eval.getActualDeliveryDays() < 0)
-            throw new IllegalArgumentException("Delivery days must be >= 0");
-
-        if (eval.getQualityScore() < 0 || eval.getQualityScore() > 100)
+        if (!vendor.getActive()) {
+            throw new IllegalStateException("Cannot create evaluation for inactive vendors");
+        }
+        if (evaluation.getActualDeliveryDays() < 0) {
+            throw new IllegalArgumentException("Actual delivery days must be >= 0");
+        }
+        if (evaluation.getQualityScore() < 0 || evaluation.getQualityScore() > 100) {
             throw new IllegalArgumentException("Quality score must be between 0 and 100");
+        }
 
-        eval.setMeetsDeliveryTarget(eval.getActualDeliveryDays() <= sla.getMaxDeliveryDays());
-        eval.setMeetsQualityTarget(eval.getQualityScore() >= sla.getQualityScoreThreshold());
+        evaluation.setMeetsDeliveryTarget(evaluation.getActualDeliveryDays() <= sla.getMaxDeliveryDays());
+        evaluation.setMeetsQualityTarget(evaluation.getQualityScore() >= sla.getQualityScore());
 
-        return evaluationRepo.save(eval);
+        return evaluationRepository.save(evaluation);
+    }
+
+    @Override
+    public DeliveryEvaluation getEvaluationById(Long id) {
+        return evaluationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Evaluation not found"));
     }
 
     @Override
     public List<DeliveryEvaluation> getEvaluationsForVendor(Long vendorId) {
-        return evaluationRepo.findByVendorId(vendorId);
+        return evaluationRepository.findByVendorId(vendorId);
     }
 
     @Override
-    public List<DeliveryEvaluation> getEvaluationsForRequirement(Long requirementId) {
-        return evaluationRepo.findBySlaRequirementId(requirementId);
+    public List<DeliveryEvaluation> getEvaluationsForRequirement(Long slaRequirementId) {
+        return evaluationRepository.findBySlaRequirementId(slaRequirementId);
     }
 }
