@@ -8,28 +8,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vendor-tiers")
+@RequestMapping("/api/vendor-tiers")
 public class VendorTierController {
 
-    private final VendorTierService service;
+    private final VendorTierService vendorTierService;
 
-    public VendorTierController(VendorTierService service) {
-        this.service = service;
+    public VendorTierController(VendorTierService vendorTierService) {
+        this.vendorTierService = vendorTierService;
     }
 
     @PostMapping
-    public ResponseEntity<VendorTier> create(@RequestBody VendorTier tier) {
-        return ResponseEntity.ok(service.createTier(tier));
+    public ResponseEntity<VendorTier> createTier(@RequestBody VendorTier tier) {
+        return ResponseEntity.ok(vendorTierService.createTier(tier));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VendorTier> getTier(@PathVariable Long id) {
+        return ResponseEntity.ok(vendorTierService.getTierById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<VendorTier>> getAll() {
-        return ResponseEntity.ok(service.getAllTiers());
+    public ResponseEntity<List<VendorTier>> getAllTiers() {
+        return ResponseEntity.ok(vendorTierService.getAllTiers());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
-        service.deactivateTier(id);
+    public ResponseEntity<Void> deactivateTier(@PathVariable Long id) {
+        vendorTierService.deactivateTier(id);
         return ResponseEntity.noContent().build();
     }
 }

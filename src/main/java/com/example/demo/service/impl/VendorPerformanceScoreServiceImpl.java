@@ -17,66 +17,53 @@ import java.util.List;
 @Service
 public class VendorPerformanceScoreServiceImpl implements VendorPerformanceScoreService {
 
-    private final VendorPerformanceScoreRepository scoreRepo;
-    private final DeliveryEvaluationRepository evalRepo;
-    private final VendorRepository vendorRepo;
-    private final VendorTierRepository tierRepo;
+    private final VendorPerformanceScoreRepository scoreRepository;
+    private final DeliveryEvaluationRepository evaluationRepository;
+    private final VendorRepository vendorRepository;
+    private final VendorTierRepository tierRepository;
 
-    public VendorPerformanceScoreServiceImpl(VendorPerformanceScoreRepository scoreRepo,
-                                             DeliveryEvaluationRepository evalRepo,
-                                             VendorRepository vendorRepo,
-                                             VendorTierRepository tierRepo) {
-        this.scoreRepo = scoreRepo;
-        this.evalRepo = evalRepo;
-        this.vendorRepo = vendorRepo;
-        this.tierRepo = tierRepo;
+    public VendorPerformanceScoreServiceImpl(
+            VendorPerformanceScoreRepository scoreRepository,
+            DeliveryEvaluationRepository evaluationRepository,
+            VendorRepository vendorRepository,
+            VendorTierRepository tierRepository
+    ) {
+        this.scoreRepository = scoreRepository;
+        this.evaluationRepository = evaluationRepository;
+        this.vendorRepository = vendorRepository;
+        this.tierRepository = tierRepository;
     }
 
     @Override
     public VendorPerformanceScore calculateScore(Long vendorId) {
-        Vendor vendor = vendorRepo.findById(vendorId)
+        Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
 
-        List<DeliveryEvaluation> evaluations = evalRepo.findByVendorId(vendorId);
+        List<DeliveryEvaluation> evaluations = evaluationRepository.findByVendorId(vendorId);
 
-        double total = evaluations.size();
-        if (total == 0) total = 1; // avoid division by zero
+        long total = evaluations.size();
+        long onTime = evaluations.stream().filter(DeliveryEvaluation::getMeetsDeliveryTarget).count();
+        long quality = evaluations.stream().filter(DeliveryEvaluation::getMeetsQualityTarget).count();
 
-        long onTimeCount = evaluations.stream().filter(DeliveryEvaluation::getMeetsDeliveryTarget).count();
-        long qualityCount = evaluations.stream().filter(DeliveryEvaluation::getMeetsQualityTarget).count();
+        double onTimePercent = total == 0 ? 0 : (onTime * 100.0 / total);
+        double qualityPercent = total == 0 ? 0 : (quality * 100.0 / total);
+        double overall = (onTimePercent + qualityPercent) / 2.0;
 
-        double onTimePercentage = (onTimeCount / total) * 100;
-        double qualityPercentage = (qualityCount / total) * 100;
-        double overallScore = (onTimePercentage + qualityPercentage) / 2;
-
-        VendorPerformanceScore score = new VendorPerformanceScore();
-        score.setVendor(vendor);
-        score.setOnTimePercentage(onTimePercentage);
-        score.setQualityCompliancePercentage(qualityPercentage);
-        score.setOverallScore(overallScore);
+        VendorPerformanceScore score = new VendorPerformanceScore(vendor, onTimePercent, qualityPercent, overall);
         score.setCalculatedAt(LocalDate.now());
 
-        // assign tier if any
-        List<VendorTier> tiers = tierRepo.findByActiveTrueOrderByMinScoreThresholdDesc();
-        for (VendorTier tier : tiers) {
-            if (overallScore >= tier.getMinScoreThreshold()) {
-                score.setTier(tier);
-                break;
-            }
-        }
-
-        return scoreRepo.save(score);
+        return scoreRepository.save(score);
     }
 
     @Override
     public VendorPerformanceScore getLatestScore(Long vendorId) {
-        List<VendorPerformanceScore> list = scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId);
-        if (list.isEmpty()) return null;
-        return list.get(0);
+        List<VendorPerformanceScore> scores = scoreRepository.findByVendorOrderByCalculatedAtDesc(vendorId);
+        if (scores.isEmpty()) return null;
+        return scores.get(0);
     }
 
     @Override
     public List<VendorPerformanceScore> getScoresForVendor(Long vendorId) {
-        return scoreRepo.findByVendorOrderByCalculatedAtDesc(vendorId);
+        return scoreRepository.findByVendorOrderByCalculatedAtDesc(vendorId);
     }
 }
