@@ -4,7 +4,6 @@ import com.example.demo.model.SLARequirement;
 import com.example.demo.repository.SLARequirementRepository;
 import com.example.demo.service.SLARequirementService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -36,13 +35,11 @@ public class SLARequirementServiceImpl implements SLARequirementService {
         SLARequirement existing = slaRequirementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
 
-        if (requirement.getRequirementName() != null && !requirement.getRequirementName().equals(existing.getRequirementName())) {
-            if (slaRequirementRepository.existsByRequirementName(requirement.getRequirementName())) {
-                throw new IllegalArgumentException("SLA Requirement name must be unique");
-            }
-            existing.setRequirementName(requirement.getRequirementName());
+        if (requirement.getRequirementName() != null && !requirement.getRequirementName().equals(existing.getRequirementName()) &&
+            slaRequirementRepository.existsByRequirementName(requirement.getRequirementName())) {
+            throw new IllegalArgumentException("SLA Requirement name must be unique");
         }
-
+        if (requirement.getRequirementName() != null) existing.setRequirementName(requirement.getRequirementName());
         if (requirement.getMaxDeliveryDays() != null) existing.setMaxDeliveryDays(requirement.getMaxDeliveryDays());
         if (requirement.getQualityScoreThreshold() != null) existing.setQualityScoreThreshold(requirement.getQualityScoreThreshold());
         if (requirement.getDescription() != null) existing.setDescription(requirement.getDescription());

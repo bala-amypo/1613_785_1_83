@@ -6,7 +6,6 @@ import com.example.demo.service.VendorService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VendorServiceImpl implements VendorService {
@@ -30,12 +29,11 @@ public class VendorServiceImpl implements VendorService {
     public Vendor updateVendor(Long id, Vendor vendor) {
         Vendor existing = vendorRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-        if (vendor.getName() != null && !vendor.getName().equals(existing.getName())) {
-            if (vendorRepository.existsByName(vendor.getName())) {
-                throw new IllegalArgumentException("Vendor name must be unique");
-            }
-            existing.setName(vendor.getName());
+        if (vendor.getName() != null && !vendor.getName().equals(existing.getName()) &&
+            vendorRepository.existsByName(vendor.getName())) {
+            throw new IllegalArgumentException("Vendor name must be unique");
         }
+        if (vendor.getName() != null) existing.setName(vendor.getName());
         if (vendor.getContactEmail() != null) existing.setContactEmail(vendor.getContactEmail());
         if (vendor.getContactPhone() != null) existing.setContactPhone(vendor.getContactPhone());
         return vendorRepository.save(existing);
