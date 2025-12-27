@@ -5,11 +5,8 @@ import com.example.demo.repository.SLARequirementRepository;
 import com.example.demo.service.SLARequirementService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class SLARequirementServiceImpl implements SLARequirementService {
-
     private final SLARequirementRepository slaRequirementRepository;
 
     public SLARequirementServiceImpl(SLARequirementRepository slaRequirementRepository) {
@@ -18,52 +15,43 @@ public class SLARequirementServiceImpl implements SLARequirementService {
 
     @Override
     public SLARequirement createRequirement(SLARequirement requirement) {
-        if (requirement.getMaxDeliveryDays() <= 0) {
-            throw new IllegalArgumentException("Max delivery days must be > 0");
-        }
-        if (requirement.getQualityScore() < 0 || requirement.getQualityScore() > 100) {
-            throw new IllegalArgumentException("Quality score must be between 0 and 100");
-        }
+        validateRequirement(requirement);
         if (slaRequirementRepository.existsByRequirementName(requirement.getRequirementName())) {
-            throw new IllegalArgumentException("SLA Requirement name must be unique");
+            throw new IllegalArgumentException("SLA requirement name must be unique");
         }
-        requirement.setActive(true);
         return slaRequirementRepository.save(requirement);
     }
 
     @Override
-    public SLARequirement updateRequirement(Long id, SLARequirement update) {
+    public SLARequirement updateRequirement(Long id, SLARequirement requirement) {
         SLARequirement existing = slaRequirementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
-        if (update.getRequirementName() != null && !update.getRequirementName().equals(existing.getRequirementName())) {
-            if (slaRequirementRepository.existsByRequirementName(update.getRequirementName())) {
-                throw new IllegalArgumentException("SLA Requirement name must be unique");
-            }
-            existing.setRequirementName(update.getRequirementName());
+            .orElseThrow(() -> new IllegalArgumentException("SLA requirement not found"));
+        if (slaRequirementRepository.existsByRequirementName(requirement.getRequirementName()) 
+            && !requirement.getRequirementName().equals(existing.getRequirementName())) {
+            throw new IllegalArgumentException("SLA requirement name must be unique");
         }
-        if (update.getMaxDeliveryDays() > 0) existing.setMaxDeliveryDays(update.getMaxDeliveryDays());
-        if (update.getQualityScore() >= 0 && update.getQualityScore() <= 100) existing.setQualityScore(update.getQualityScore());
-        if (update.getDescription() != null) existing.setDescription(update.getDescription());
-
+        validateRequirement(requirement);
+        existing.setRequirementName(requirement.getRequirementName());
+        existing.setDescription(requirement.getDescription());
+        existing.setMaxDeliveryDays(requirement.getMaxDeliveryDays());
+        existing.setMinQualityScore(requirement.getMinQualityScore());
         return slaRequirementRepository.save(existing);
     }
 
     @Override
-    public SLARequirement getRequirementById(Long id) {
-        return slaRequirementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
-    }
-
-    @Override
-    public List<SLARequirement> getAllRequirements() {
-        return slaRequirementRepository.findAll();
-    }
-
-    @Override
     public void deactivateRequirement(Long id) {
-        SLARequirement existing = slaRequirementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("SLA Requirement not found"));
-        existing.setActive(false);
-        slaRequirementRepository.save(existing);
+        SLARequirement requirement = slaRequirementRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("SLA requirement not found"));
+        requirement.setActive(false);
+        slaRequirementRepository.save(requirement);
+    }
+
+    private void validateRequirement(SLARequirement req) {
+        if (req.getMaxDeliveryDays() == null || req.getMaxDeliveryDays() <= 0) {
+            throw new IllegalArgumentException("Max delivery days must be greater than 0");
+        }
+        if (req.getMinQualityScore() == null || req.getMinQualityScore() < 0 || req.getMinQualityScore() > 100) {
+            throw new IllegalArgumentException("Quality score must be between 0 and 100");
+        }
     }
 }

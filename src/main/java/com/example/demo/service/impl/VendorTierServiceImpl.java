@@ -1,47 +1,49 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.VendorPerformanceScore;
 import com.example.demo.model.VendorTier;
+import com.example.demo.repository.VendorPerformanceScoreRepository;
 import com.example.demo.repository.VendorTierRepository;
 import com.example.demo.service.VendorTierService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class VendorTierServiceImpl implements VendorTierService {
+    private final VendorTierRepository vendorTierRepository;
+    private final VendorPerformanceScoreRepository vendorPerformanceScoreRepository;
 
-    private final VendorTierRepository tierRepository;
-
-    public VendorTierServiceImpl(VendorTierRepository tierRepository) {
-        this.tierRepository = tierRepository;
+    public VendorTierServiceImpl(VendorTierRepository vendorTierRepository) {
+        this.vendorTierRepository = vendorTierRepository;
     }
 
     @Override
     public VendorTier createTier(VendorTier tier) {
-        if (tier.getMinScoreThreshold() < 0 || tier.getMinScoreThreshold() > 100) {
-            throw new IllegalArgumentException("Threshold must be between 0–100");
+        if (tier.getMinOverallScore() < 0 || tier.getMinOverallScore() > 100) {
+            throw new IllegalArgumentException("Tier threshold must be between 0–100");
         }
-        if (tierRepository.existsByTierName(tier.getTierName())) {
+        if (vendorTierRepository.existsByTierName(tier.getTierName())) {
             throw new IllegalArgumentException("Tier name must be unique");
         }
-        return tierRepository.save(tier);
+        return vendorTierRepository.save(tier);
     }
 
     @Override
-    public VendorTier getTierById(Long id) {
-        return tierRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Tier not found"));
-    }
-
-    @Override
-    public List<VendorTier> getAllTiers() {
-        return tierRepository.findAll();
+    public String assignTier(Long vendorId) {
+        VendorPerformanceScore latestScore = vendorPerformanceScoreRepository.findLatestByVendorId(vendorId)
+            .orElseThrow(() -> new IllegalArgumentException("No performance score found"));
+        
+        return vendorTierRepository.findByActiveTrueOrderByMinOverallScoreDesc().stream()
+            .filter(tier -> latestScore.getOverallScore() >= tier.getMinOverallScore())
+            .findFirst()
+            .map(VendorTier::getTierName)
+            .orElse("BRONZE");
     }
 
     @Override
     public void deactivateTier(Long id) {
-        VendorTier tier = getTierById(id);
+        VendorTier tier = vendorTierRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Tier not found"));
         tier.setActive(false);
-        tierRepository.save(tier);
+        vendorTierRepository.save(tier);
     }
 }

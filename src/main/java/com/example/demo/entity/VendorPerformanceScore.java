@@ -1,43 +1,53 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "vendor_performance_scores")
 public class VendorPerformanceScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    private Vendor vendor;
-
-    private Double onTimePercentage;
-    private Double qualityCompliancePercentage;
+    
+    @Column(name = "vendor_id")
+    private Long vendorId;
+    
+    @Column(name = "delivery_compliance_rate")
+    private Double deliveryComplianceRate;
+    
+    @Column(name = "quality_compliance_rate")
+    private Double qualityComplianceRate;
+    
+    @Column(name = "overall_score")
     private Double overallScore;
-    private LocalDate calculatedAt = LocalDate.now();
+    
+    @Column(name = "calculated_at")
+    private LocalDateTime calculatedAt = LocalDateTime.now();
 
     public VendorPerformanceScore() {}
 
-    public VendorPerformanceScore(Vendor vendor, Double onTime, Double quality, Double overall) {
-        this.vendor = vendor;
-        this.onTimePercentage = onTime;
-        this.qualityCompliancePercentage = quality;
+    public VendorPerformanceScore(Vendor vendor, Double deliveryRate, Double qualityRate, Double overall) {
+        this.vendorId = vendor.getId();
+        this.deliveryComplianceRate = deliveryRate;
+        this.qualityComplianceRate = qualityRate;
         this.overallScore = overall;
-        this.calculatedAt = LocalDate.now();
     }
 
-    // Getters/Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Vendor getVendor() { return vendor; }
-    public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public Double getOnTimePercentage() { return onTimePercentage; }
-    public void setOnTimePercentage(Double onTimePercentage) { this.onTimePercentage = onTimePercentage; }
-    public Double getQualityCompliancePercentage() { return qualityCompliancePercentage; }
-    public void setQualityCompliancePercentage(Double qualityCompliancePercentage) { this.qualityCompliancePercentage = qualityCompliancePercentage; }
+    public Long getVendorId() { return vendorId; }
+    public void setVendorId(Long vendorId) { this.vendorId = vendorId; }
+    public Double getDeliveryComplianceRate() { return deliveryComplianceRate; }
+    public void setDeliveryComplianceRate(Double deliveryComplianceRate) { this.deliveryComplianceRate = deliveryComplianceRate; }
+    public Double getQualityComplianceRate() { return qualityComplianceRate; }
+    public void setQualityComplianceRate(Double qualityComplianceRate) { this.qualityComplianceRate = qualityComplianceRate; }
     public Double getOverallScore() { return overallScore; }
     public void setOverallScore(Double overallScore) { this.overallScore = overallScore; }
-    public LocalDate getCalculatedAt() { return calculatedAt; }
-    public void setCalculatedAt(LocalDate calculatedAt) { this.calculatedAt = calculatedAt; }
+    public LocalDateTime getCalculatedAt() { return calculatedAt; }
+    public void setCalculatedAt(LocalDateTime calculatedAt) { this.calculatedAt = calculatedAt; }
+    
+    public Double getOnTimePercentage() { return deliveryComplianceRate; }
+    public Double getQualityCompliancePercentage() { return qualityComplianceRate; }
 }

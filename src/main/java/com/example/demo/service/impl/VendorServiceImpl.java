@@ -4,12 +4,10 @@ import com.example.demo.model.Vendor;
 import com.example.demo.repository.VendorRepository;
 import com.example.demo.service.VendorService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class VendorServiceImpl implements VendorService {
-
     private final VendorRepository vendorRepository;
 
     public VendorServiceImpl(VendorRepository vendorRepository) {
@@ -21,30 +19,25 @@ public class VendorServiceImpl implements VendorService {
         if (vendorRepository.existsByName(vendor.getName())) {
             throw new IllegalArgumentException("Vendor name must be unique");
         }
-        vendor.setActive(true);
         return vendorRepository.save(vendor);
     }
 
     @Override
-    public Vendor updateVendor(Long id, Vendor update) {
+    public Vendor updateVendor(Long id, Vendor vendor) {
         Vendor existing = vendorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-        if (update.getName() != null && !update.getName().equals(existing.getName())) {
-            if (vendorRepository.existsByName(update.getName())) {
-                throw new IllegalArgumentException("Vendor name must be unique");
-            }
-            existing.setName(update.getName());
+            .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+        if (vendorRepository.existsByName(vendor.getName()) && !vendor.getName().equals(existing.getName())) {
+            throw new IllegalArgumentException("Vendor name must be unique");
         }
-        if (update.getContactEmail() != null) existing.setContactEmail(update.getContactEmail());
-        if (update.getContactPhone() != null) existing.setContactPhone(update.getContactPhone());
-
+        existing.setContactEmail(vendor.getContactEmail());
+        existing.setContactPhone(vendor.getContactPhone());
         return vendorRepository.save(existing);
     }
 
     @Override
     public Vendor getVendorById(Long id) {
         return vendorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
     }
 
     @Override
@@ -54,9 +47,8 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public void deactivateVendor(Long id) {
-        Vendor existing = vendorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-        existing.setActive(false);
-        vendorRepository.save(existing);
+        Vendor vendor = getVendorById(id);
+        vendor.setActive(false);
+        vendorRepository.save(vendor);
     }
 }
