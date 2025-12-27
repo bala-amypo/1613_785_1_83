@@ -18,7 +18,6 @@ public class SLARequirement {
         this.maxDeliveryDays = maxDeliveryDays; this.minQualityScore = minQualityScore;
     }
 
-    // Getters/Setters
     public Long getId() { return id; } public void setId(Long id) { this.id = id; }
     public String getRequirementName() { return requirementName; } public void setRequirementName(String requirementName) { this.requirementName = requirementName; }
     public String getDescription() { return description; } public void setDescription(String description) { this.description = description; }
