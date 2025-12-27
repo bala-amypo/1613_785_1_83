@@ -9,26 +9,25 @@ public class VendorTier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
     private String tierName;
-
     private double minScoreThreshold;
-
-    private boolean active = true;
+    private String description;
+    private Boolean active = true;
 
     public VendorTier() {}
 
-    public VendorTier(String tierName, double minScoreThreshold) {
-        this.tierName = tierName;
-        this.minScoreThreshold = minScoreThreshold;
-        this.active = true;
+    public VendorTier(String name, double score, String desc) {
+        this.tierName = name;
+        this.minScoreThreshold = score;
+        this.description = desc;
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public String getTierName() { return tierName; }
-    public void setTierName(String tierName) { this.tierName = tierName; }
     public double getMinScoreThreshold() { return minScoreThreshold; }
-    public void setMinScoreThreshold(double minScoreThreshold) { this.minScoreThreshold = minScoreThreshold; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }
